@@ -1,0 +1,111 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Vue</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <style>
+        .box {
+            padding: 100px 0; /*100px top+bottom, 0 left+right*/
+            width: 400px;
+            text-align: center;
+            background: #ddd;
+            margin: 20px;
+            display: inline-block;
+        }
+        body{
+            background: white;
+            max-width: 960px;
+            margin: 20px auto;
+        }
+        p, h3, ul, a {
+            margin: 10px;
+            padding: 10px;
+        }
+        li {
+            list-style-type: none;
+            background: gray;
+            margin: 20px auto;
+            padding: 10px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        li.fav{
+            background: yellow;
+            color: black
+        }
+    </style>
+</head>
+<body>
+    <h1>Hello World!</h1>
+
+    <!-- Scope of variables defined in app.js is the div (app is mounted on app div)-->
+    <div id="app">
+         <!--References properties in app.js-->
+        <p>I'm {{ name }}, I am a {{ job }}. I am {{ age }}.</p>
+
+        <!-- v-on is a directive, which allows us to react to events (click in this case)
+        v-on and @ are interchangable since v-on is so common (eg. @click) -->
+        <button v-on:click="age++">Increase Age</button>
+        
+        <!-- invokes changeName function in app.js-->
+        <div @click="changeName('Hin Chit')">Does not have to be a button</div>
+        
+        <div v-if="showText">
+            <p>Show if showText is true</p>
+        </div>
+        
+        <!--If/else logic + syntax-->
+        <button @click="toggleShowText">
+            <span v-if="showText">Hide Text</span>
+            <span v-else-if="!showText">Show Text</span>
+            <span v-else>Not possible</span>
+        </button>
+        <br>
+        
+        <!-- mouse events -->
+        <!-- returns a MouseEvent object that can be passed into handleEvent
+        if we don't pass argument, event object is automatically first argument
+        if you want to pass an argument after, use $event keyword-->
+        <div class="box" @mouseover="handleEvent">Mouseover</div>
+        <div class="box" @mouseleave="handleEvent($event, 'word')">Mouseleave</div>
+        <div class="box" @dblclick="handleEvent">Doubleclick</div>
+        <div class="box" @mousemove="handleMousemove">Position: {{x}},{{y}}</div>
+        <br>
+
+        <!-- attribute binding: dynamic values -->
+        <a v-bind:href="url">linky</a><br>
+        <a :href="url">linky</a> <!-- just : performs same data binding function -->
+
+        
+        <!-- for loops -->
+        <!-- dynamic classes: key value pairs, key = conditional class we apply
+        value = the criteria for applying class; in above css, we define different
+        styling specifically for li.fav -->
+        <ul>
+            <li v-for="team in teams" :class="{ fav: team.isFav }" @click="toggleFavTeam(team)">
+                <h3>{{ team.name }}</h3>
+                <p>{{ team.color }}</p>
+                <a :href="team.url">link</a>
+            </li>
+        </ul>
+
+
+        <!-- Computed Properties: filtering -->
+        <ul>
+            <li v-for="team in filteredTeams" :class="{ fav: team.isFav }">
+                <h3>{{ team.name }}</h3>
+                <p>{{ team.color }}</p>
+                <a :href="team.url">link</a>
+            </li>
+        </ul>
+
+    </div>
+
+    
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -47,6 +47,7 @@ Starter files
 starts off as blank html, then vue components are injected as necessary
 
 ### Programming Elements
+
 #### Variables
 
 - defined in `js` within `data()` in root component object
@@ -85,7 +86,7 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
                 <span v-else-if="!showText">Show Text</span>
                 <span v-else>Not possible</span>
             </button>
-        ```
+            ```
 - v-bind
     - Binds dynamic attribtes (variables) to component
     - Shorthand: `:`
@@ -99,7 +100,7 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
                 <p>{{ team.color }}</p>
                 <a :href="team.url">link</a>
             </li>
-        ```
+            ```
 
 #### Mouse Events
 
@@ -128,7 +129,7 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
                     this.x = e.offsetX
                     this.y = e.offsetY
                 }
-            ```
+                ```
     - If you want to pass arguments, use `$event` keyword
         - `index.html`:
             - `<div class="box" @mouseleave="handleEvent($event, 'word')">Mouseleave</div>`
@@ -141,7 +142,7 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
                         console.log(data)
                     }
                 }
-            ```
+                ```
 - Printing/Debugging
     - `console.log()`
 
@@ -166,10 +167,3 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
             }
             ```
 
-#### html
-
-- defined within `<body>` tag
-
-#### css
-
-- defined within `<style>` tag

@@ -38,20 +38,23 @@ Starter files
         - html `template`
         - `script`
             - can import elements from components folder
-            - ```import HelloWorld from './components/HelloWorld.vue'```
+                - ```import HelloWorld from './components/HelloWorld.vue'```
             - stores root component object containing data, methods, computed properties, etc.
         - `style`
-
-
+            - `scoped` keyword allows styling to only apply to html elements within the same module/script.
+            - ```html
+                <style scoped>
+                    .h1 {}
+                </style>
 
 starts off as blank html, then vue components are injected as necessary
 
 ### Programming Elements
 
-#### Variables
+#### Variables (data)
 
 - defined in `js` within `data()` in root component object
-- to reference in `html`, use {{ variable_name }}
+- to reference in `html`, use `{{ variable_name }}`
 - Example
     - ```javascript
         data() {
@@ -62,7 +65,6 @@ starts off as blank html, then vue components are injected as necessary
                 age: 23
             }
         }
-    ```
 
 #### Directives
 Attaches logic/behavior to different html elements
@@ -101,7 +103,9 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
                 <a :href="team.url">link</a>
             </li>
             ```
-
+        - Conditionally adding class
+            - pass object with key value pair `{classname: condition}`
+            - if condition is true, class will be added to component
 #### Mouse Events
 
 - mouseover
@@ -142,7 +146,6 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
                         console.log(data)
                     }
                 }
-                ```
 - Printing/Debugging
     - `console.log()`
 
@@ -158,7 +161,6 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
                 {name: "Man City", color: "Blue", url:"https://www.mancity.com/", isFav:false},
                 {name: "Newcastle", color: "Black", url:"https://www.nufc.co.uk/", isFav:false}
             ]
-            ```
     - `computed`:
         - ```javascript
             filteredTeams(){
@@ -167,3 +169,97 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
             }
             ```
 
+#### Template Refs
+- Used to provide direct access to underlying DOM (html) elements after they are mounted
+```html
+    <input ref="input">
+```
+- Gives access to `<input>` element
+- Access in methods using `this.$refs.<ref_name>`
+    - ref_name is `input` in this example
+- Can then apply [html DOM element functions](https://www.w3schools.com/jsref/dom_obj_all.asp)
+    - [devdocs documentation](https://devdocs.io/dom/htmlelement)
+    - Eg. `this.$refs.input.focus()`
+
+#### Components
+- imported and declared in `<script>` section
+```javascript
+<script>
+import HelloWorld from './components/HelloWorld.vue'
+export default {
+    components: { HelloWorld }
+}
+</script>
+```
+- can be used in html `<template>` section
+```html
+<template>
+    <HelloWorld />
+</template>
+```
+
+#### Props
+- Enables passing data to child components using custom attributes
+- A component can have unlimited # of prop
+- By default, any value can be passed to any prop
+
+**Registering Props**
+- declared in `<script>` section with keyword `props`
+- Array of strings or dict
+```javascript
+<script>
+    export default {
+        props: ['title', 'likes', 'isPublished', 'commentIds', 'author']
+    }
+</script>
+```
+or
+```javascript
+<script>
+    export default {
+        props: {
+            title: String,
+            likes: Number,
+            isPublished: Boolean,
+            commentIds: Array,
+            author: Object,
+            callback: Function,
+            contactsPromise: Promise // or any other constructor
+        }
+    }
+</script>
+```
+
+**Passing Data**
+
+*Static*
+```html
+<blog-post title="My journey with Vue"></blog-post>
+```
+- Passing prop `title` with value "My journey with Vue" to blog-post component
+- prop must be declared
+
+*Dynamic*
+```html
+<template>
+    <blog-post 
+        v-for="post in posts" 
+        v-bind:cover="post.title + ' by ' + post.author"
+        v-bind:id="post.id"
+    ></blog-post>
+</template>
+<script>
+import blog-post from './components/blog-post.vue'
+export default {
+    components: { blog-post },
+    props: { cover: String, id: Number },
+    data() {
+        posts: [
+            {'id':1, 'author': 'RW', 'title': 'my first post'},
+            {'id':2, 'author': 'WR', 'title': 'my second post'}
+        ]
+    }
+}
+</script>
+```
+- need to v-bind (or just `:` for short) to pass values other than strings (eg. post id in example above)

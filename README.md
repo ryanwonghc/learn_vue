@@ -263,3 +263,156 @@ export default {
 </script>
 ```
 - need to v-bind (or just `:` for short) to pass values other than strings (eg. post id in example above)
+
+#### Custom Events
+- While props are for passing data from parent to child, custom events are used for passing data from child to parent
+- Define event keyword using `this.$emit('keyword')`
+- Accept argument in parent class
+- Example: Modal class (child) inside App class (parent)
+
+In `Modal.vue`
+```javascript
+<template>
+    <div class="backdrop" @click="closeModal">
+        <div class="modal"></div>
+    </div>
+</template>
+
+<script>
+export default {
+    methods: {
+        closeModal() {
+            this.$emit('close')
+        }
+    }
+}
+</script>
+```
+- when backdrop is clicked, method closeModal() is called and a custom event 'close' is emitted
+
+In `App.vue`
+```javascript
+<template>
+    <Modal @close="toggleModal"></Modal>
+</template>
+
+<script>
+import Modal from './components/Modal.vue'
+export default {
+  components: { Modal },
+  data() {
+    return {
+      showModal: false
+    }
+  },
+  methods: {
+    toggleModal() {
+      this.showModal = !this.showModal
+    }
+  }
+}
+</script>
+```
+- Modal element takes a 'close' parameter which runs toggleModal() function when the custom event is emitted
+
+**Adding arguments to emit**
+Child - `$emit('add', Math.random(), 44, 50)`
+Parent - `@add="custom_function(i, j, k)"`
+- passes 3 arguments into custom_function in parent which takes 3 arguments i, j, k.
+
+#### Click Event Modifiers
+- Attach modifier to click event: .<event_name> after click
+- Example: `<button @click.right="toggleModal">Show Modal</button>`
+    - modifies so only triggers on right click
+- Example: `<div class="backdrop" @click.self="closeModal">`
+    - only applies if you click on the class, not elements inside/outside
+- [documentation](https://devdocs.io/vue~3/guide/essentials/event-handling#event-modifiers)
+
+
+#### Slots
+- Used to pass templates into components
+- Pass more complex data than props
+- Pass template between the component tags, then within the component file define where you want the template to go using `<slot></slot>`
+
+Example
+In `App.vue`
+```javascript
+<Modal
+    @close="toggleModal"
+>
+    <h1>Header Here</h1>
+    <p>Para, para, paragraph</p>
+</Modal>
+```
+- the h1, p makes up the template
+- If you use another Modal template somewhere else, you can pass in a different template and it will be rendered where the slot tag is
+
+In `Modal.vue`
+```javascript
+<div class="modal">
+    <h2>Some info here</h2>
+    <h3>blah blah</h3>
+    <slot></slot>
+</div>
+```
+- Causes the h1 and p template to appear under the h3 in the modal component
+
+**Named Slot**
+- If you want some elements from the passed in template at a different location from the rest of the template
+- `<template v-slot:name>`
+
+In `App.vue`
+```javascript
+<Modal
+    @close="toggleModal"
+>
+    <template v-slot:link>
+        <a href="www.google.com">google link</a>
+    </template>
+    <h1>Header Here</h1>
+    <p>Para, para, paragraph</p>
+</Modal>
+```
+- default template outside named template always gets populated at `<slot>`
+- named template (`link` in this case) gets populated
+
+In `Modal.vue`
+```javascript
+<div class="modal">
+    <h2>Some info here</h2>
+    <h3>blah blah</h3>
+    <slot></slot>
+    <div class="namedSlot">
+        <slot name="link"></slot>
+    </div>
+</div>
+```
+- Causes the h1 and p template to appear under the h3 in the modal component
+
+**Default Content**
+- If you put content between the `<slot></slot>` tags, it becomes default content that only populates if you don't pass anything through the default slot of the component (eg. `<Modal></Modal>`)
+    - eg. `<slot>Default Content</slot>`
+- Applies even if a named slot is passed as long as nothing is passed through the default slot.
+    - eg. you would still see default content here since there is no default slot:
+```javascript
+<Modal
+    @close="toggleModal"
+>
+    <template v-slot:link>
+        <a href="www.google.com">google link</a>
+    </template>
+</Modal>
+```
+
+#### Teleport
+- Lets us send template code to places in the DOM outside our view app
+- Enables independent rendering of components so it does not have to depend on styling from parent 
+Example
+```javascript
+<teleport to="#target">
+    <!--template you want to send goes here-->
+</teleport>
+```
+- sends template to a div with class target outside of `<div id="app"></div>` in `index.html`
+- also works with ids: `to=".target"` sends it to a div with id=target
+- can also just send to `body` with `to="body"`

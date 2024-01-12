@@ -1,15 +1,24 @@
 <template>
-    <div class="backdrop">
+    <div class="backdrop" @click.self="closeModal">
         <div class="modal" :class="{ emphasize: theme === 'emphasize'}">
             <h1>{{ header }}</h1>
             <p>{{ desc }}</p>
+            <slot></slot>
+            <div class="actions">
+                <slot name="links"></slot>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
 export default {
-    props: ['header','desc','theme']
+    props: ['header','desc','theme'],
+    methods: {
+        closeModal() {
+            this.$emit('close')
+        }
+    }
 }
 </script>
 
@@ -34,5 +43,13 @@ export default {
     }
     .modal.emphasize p {
         font-style: normal;
+    }
+    .modal .actions a {
+        color: green;
+        font-size: 32px;
+    }
+    .modal.emphasize .actions a {
+        color: white;
+        font-size: 32px;
     }
 </style>

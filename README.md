@@ -34,6 +34,7 @@ Starter files
 
 - .vue
     - each .vue file defines a single vue component
+    - shortcut to templated .vue file: type `vue` in vscode
     - each vue component contains 3 parts
         - html `template`
         - `script`
@@ -416,3 +417,42 @@ Example
 - sends template to a div with class target outside of `<div id="app"></div>` in `index.html`
 - also works with ids: `to=".target"` sends it to a div with id=target
 - can also just send to `body` with `to="body"`
+
+#### Lifecycle Hooks
+![Lifecycle Hook Diagram](image.png)
+Red boxes: the different lifecycle hooks/functions we can use to fire code at different points during the component's lifecycle
+
+- beforeCreate
+    - fires before component is created
+    - cannot access any data from the data object or any template elements
+- created
+    - component is created, but not yet mounted to the DOM
+    - can access data
+    - cannot access template
+- beforeMount
+    - just before component is mounted to DOM
+    - can access data, events, and templates
+- mounted
+    - popular spot to match fetch requests if you need data for your component
+- beforeUpdate
+    - if data changes, happens after data changes but before updates are re-rendered to DOM
+- updated
+    - after all data changes have been updated in the browser
+- beforeUnmount
+    - use for cleanup
+- unmounted
+    - use for cleanup
+
+**Implementation**
+- Goes inside the component `.vue` file
+```javascript
+<script>
+export default {
+    props: ['delay'],
+    mounted(){
+        console.log('component mounted')
+    }
+}
+</script>
+```
+- eg. uses mounted lifecycle hook, code runs when mounted

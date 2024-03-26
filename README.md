@@ -107,8 +107,19 @@ Expects: `<directive>:<event>="<Function(optional argument(s))/ variable/ statme
         - Conditionally adding class
             - pass object with key value pair `{classname: condition}`
             - if condition is true, class will be added to component
+- v-model
+    - Create a two-way binding on a form input element or a component.
+    - Specifies what property you want to track input in
+    - Example: `<input type="password" required v-model="password">`
+        - tracks input in data variable `password`
+    - Two way binding: 
+        - If user updates entry in form, variable is updated
+        - If variable is updated, modifies what we see in input field (and any other place where we output the variable)
 #### Mouse Events
-
+Example:
+```html
+<div class="box" @mouseleave="handleEvent($event, 'word')">Mouseleave</div>
+```
 - mouseover
     - Triggers if mouse hovers over component
 - mouseleave
@@ -456,3 +467,167 @@ export default {
 </script>
 ```
 - eg. uses mounted lifecycle hook, code runs when mounted
+#### Vue Router
+- User makes one request to server (through specifying URL)
+    - eg. www.mywebsite.com, or www.mywebsite.com/about, etc.
+- Depending on the URL, vue decides what component to nest in the browser
+- After initial link, when we navigate the website, we don't send additional requests to server; Vue intercepts requests and adjusts components based on route
+    - intercept requests using `<router-link>` tag
+
+**Initialize Project with Vue Router**
+New default folder: `src > router`
+- `src/router/index.js`: where we set up our routes using `routes` array
+- Each route object has 3 properties
+    - path: url path (on top of base path, eg. `/about`)
+    - name: page identifier (eg. `About`)
+    - component: component used when routed to
+        - need to import component at top of `index.js`
+        - eg. `import About from '../views/About.vue'`
+- Create router instance
+```javascript
+const router = createRouter({
+  history: createWebHistory(process.env.BASE_URL),
+  routes
+})
+```
+- in `main.js`
+    - Use router: `createApp(App).use(router).mount('#app')`
+- `src/views`
+    - where our components live (.vue files)
+- `components`
+    - Used to store reusable components (eg. modal, custom buttom, card components etc.)
+    - Anything that doesn't belong to just one page
+- `App.vue`
+    - `<router-view/>` tag
+        - location of where components from `routes` array will be dynamically injected (depending on the route we visit)
+
+**Router Links**
+- `<router-link>` tag intercepts requests to server and is used to determine which Vue components to inject (based on routes array)
+- Example: `<router-link to="/about">About</router-link>`
+- Example (using `name` property): `<router-link :to="{ name: 'About' }">About</router-link>`
+
+**Route Parameters**
+- Variable parts of a URL segment used to create dynamic routes based on user input
+    - eg. on a `Users` page where you can select a user by id, the user ID becomes the route parameter and is used to link to a profile page for that specific user
+- Add to routes array with path `:<route parameter>` (typically `id`)
+    - specify that a keyword is a route parameter with `:`
+```javascript
+{
+    path: '/jobs/:id',
+    name: 'jobs',
+    component: Jobs
+}
+```
+
+**Route Object**
+- `$route` contains information about the current route
+    - route parameter value
+        - eg. `<p>The Job ID is {{ $route.params.id }}</p>`, where route parameter variable name is `id`
+- store variable within `data` object
+```javascript
+<script>
+export default {
+    data() {
+        return {
+            id: this.$route.params.id
+        }
+    }
+}
+</script>
+```
+
+**Passing Value to Child Class**
+```javascript
+<template>
+    <h1>Jobs</h1>
+    <div v-for="job in jobs" :key="job.id">
+        <router-link :to="{ name: 'JobDetails', params: { id: job.id } }">
+            <h2>{{ job.title }}</h2>
+        </router-link>
+    </div>
+</template>
+```
+- to: link to the `JobDetails` element in `routes` array (that has path `/Jobs/:id`)
+- params consists of key value pairs, key is variable you name that you pass into child class
+
+**Accepting Data from Parent Class**
+- In `routes` array, add new property to Child Class: `props: true`
+```javascript
+{
+    path: '/jobs/:id',
+    name: 'JobDetails',
+    component: JobDetails,
+    props: true
+}
+```
+- In child class, accept prop (name is variable name passed in through `params` object)
+```javascript
+<script>
+export default {
+    props: ['id']
+}
+</script>
+```
+
+**Redirecting Paths**
+- eg. Want `/all-jobs` to redirect to `jobs`
+- Add redirect element to `routes` array
+```javascript
+{
+    path: '/all-jobs',
+    redirect: '/jobs'
+}
+```
+
+**404 Catch All Page**
+- In `routes` array:
+```javascript
+{
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFound
+}
+```
+- Define `NotFound.vue` in `src/views`
+```javascript
+<template>
+    <h2>404</h2>
+    <h3>Page Not Found</h3>
+</template>
+```
+
+**Programmatic Navigation**
+- With `$router` object, we have access to web history (eg. what pages the user has been on)
+- Can direct users to different pages based on web history
+- Go back one page
+```javascript
+<template>
+    <button @click="back">Go Back</button>
+</template>
+
+<script>
+export default {
+    methods: {
+        back() {
+            this.$router.go(-1)
+        }
+    }
+}
+</script>
+```
+- Go to specific page
+    - push page onto web history
+```javascript
+<template>
+    <button @click="redirectHome">Go Home</button>
+</template>
+
+<script>
+export default {
+    methods: {
+        redirectHome() {
+            this.$router.push({ name: 'Home' })
+        }
+    }
+}
+```

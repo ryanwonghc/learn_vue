@@ -1,0 +1,8 @@
+{
+    "jobs": [
+        { "title": "Footballer", "id": 1, "details": "Wazza" },
+        { "title": "Teacher", "id": 2, "details": "Gazza" },
+        { "title": "Astronaut", "id": 3, "details": "Plazza" }
+    ],
+    "blogs": []
+}
